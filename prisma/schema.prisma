@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String?   @unique
+  emailVerified DateTime?
+  image         String?
+  accounts      Account[]
+  sessions      Session[]
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Desbravador {
+  id                 String     @id @default(cuid())
+  codigo_desbravador String     @unique
+  nome_desbravador   String
+  unidade            String
+  created_at         DateTime   @default(now())
+  updated_at         DateTime   @updatedAt
+  completas          Completa[]
+
+  @@map("desbravador")
+}
+
+model Especialidade {
+  id                   String     @id @default(cuid())
+  codigo_especialidade String     @unique
+  nome_especialidade   String
+  created_at           DateTime   @default(now())
+  updated_at           DateTime   @updatedAt
+  completas            Completa[]
+
+  @@map("especialidades")
+}
+
+model Completa {
+  id                   String        @id @default(cuid())
+  codigo_desbravador   String
+  codigo_especialidade String
+  email_responsavel    String
+  created_at           DateTime      @default(now())
+  desbravador          Desbravador   @relation(fields: [codigo_desbravador], references: [codigo_desbravador], onDelete: Restrict)
+  especialidade        Especialidade @relation(fields: [codigo_especialidade], references: [codigo_especialidade], onDelete: Restrict)
+
+  @@unique([codigo_desbravador, codigo_especialidade])
+  @@index([codigo_desbravador])
+  @@index([codigo_especialidade])
+  @@map("especialidade_completa")
+}
