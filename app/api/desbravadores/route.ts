@@ -6,6 +6,7 @@ import {
   normalizeText,
   prismaError,
   requireUserEmail,
+  isAdmin,
 } from "@/lib/api";
 
 export const runtime = "nodejs";
@@ -24,6 +25,10 @@ export async function GET() {
 export async function POST(request: Request) {
   const authResult = await requireUserEmail();
   if ("error" in authResult) return authResult.error;
+
+  if (!(await isAdmin(authResult.email))) {
+    return jsonError("Apenas administradores podem cadastrar desbravadores.", 403);
+  }
 
   const body = await request.json();
   const codigo_desbravador = normalizeCode(body.codigo_desbravador);

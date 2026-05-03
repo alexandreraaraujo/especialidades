@@ -6,8 +6,8 @@ Aplicacao web em Next.js com TypeScript para controlar especialidades concluidas
 
 - Login com Google.
 - Dashboard com totais de desbravadores, especialidades e conclusoes.
-- CRUD de desbravadores.
-- CRUD de especialidades.
+- CRUD de desbravadores somente para administradores.
+- Especialidades permanecem no banco/API para registro, sem tela de cadastro no menu.
 - Registro em massa por desbravador.
 - Registro em massa por especialidade.
 - Listagem de especialidades concluidas com responsavel e data/hora.
@@ -160,8 +160,7 @@ Especialidades concluidas:
 
 - `/` login
 - `/dashboard`
-- `/desbravadores`
-- `/especialidades`
+- `/desbravadores` somente para administradores
 - `/registrar/desbravador`
 - `/registrar/especialidade`
 - `/completas`

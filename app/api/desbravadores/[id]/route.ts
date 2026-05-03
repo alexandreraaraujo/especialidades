@@ -1,7 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import {
-  canManage,
-  forbiddenOwnerMessage,
+  isAdmin,
   jsonError,
   jsonSuccess,
   normalizeCode,
@@ -37,8 +36,8 @@ export async function PUT(request: Request, { params }: Params) {
 
   if (!existente) return jsonError("Desbravador nao encontrado.", 404);
 
-  if (!(await canManage(existente.email_responsavel, authResult.email))) {
-    return forbiddenOwnerMessage();
+  if (!(await isAdmin(authResult.email))) {
+    return jsonError("Apenas administradores podem alterar desbravadores.", 403);
   }
 
   const body = await request.json();
@@ -74,8 +73,8 @@ export async function DELETE(_request: Request, { params }: Params) {
 
   if (!desbravador) return jsonError("Desbravador nao encontrado.", 404);
 
-  if (!(await canManage(desbravador.email_responsavel, authResult.email))) {
-    return forbiddenOwnerMessage();
+  if (!(await isAdmin(authResult.email))) {
+    return jsonError("Apenas administradores podem excluir desbravadores.", 403);
   }
 
   const total = await prisma.completa.count({

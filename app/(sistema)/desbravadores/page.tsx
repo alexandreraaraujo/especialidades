@@ -1,6 +1,17 @@
-import { DesbravadoresClient } from "@/components/DesbravadoresClient";
+import { redirect } from "next/navigation";
 
-export default function DesbravadoresPage() {
+import { auth } from "@/auth";
+import { DesbravadoresClient } from "@/components/DesbravadoresClient";
+import { isAdmin } from "@/lib/api";
+
+export default async function DesbravadoresPage() {
+  const session = await auth();
+  const email = session?.user?.email;
+
+  if (!email || !(await isAdmin(email))) {
+    redirect("/dashboard");
+  }
+
   return (
     <section className="stack">
       <div className="page-title">
