@@ -11,8 +11,14 @@ export async function POST(request: Request) {
 
   const body = await request.json();
   const codigo_especialidade = normalizeCode(body.codigo_especialidade);
-  const codigos_desbravadores = Array.isArray(body.codigos_desbravadores)
-    ? [...new Set(body.codigos_desbravadores.map(normalizeCode).filter(Boolean))]
+  const codigos_desbravadores: string[] = Array.isArray(body.codigos_desbravadores)
+    ? Array.from(
+        new Set(
+          body.codigos_desbravadores
+            .map((codigo: unknown) => normalizeCode(codigo))
+            .filter((codigo: string) => Boolean(codigo)),
+        ),
+      )
     : [];
 
   if (!codigo_especialidade || codigos_desbravadores.length === 0) {
