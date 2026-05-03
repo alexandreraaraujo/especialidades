@@ -6,7 +6,19 @@ import { prisma } from "@/lib/prisma";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
+  debug: process.env.NODE_ENV === "production",
   providers: [Google],
+  logger: {
+    error(code, metadata) {
+      console.error("[auth][error]", code, metadata);
+    },
+    warn(code) {
+      console.warn("[auth][warn]", code);
+    },
+    debug(code, metadata) {
+      console.log("[auth][debug]", code, metadata);
+    },
+  },
   pages: {
     signIn: "/",
   },
