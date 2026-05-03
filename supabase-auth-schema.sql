@@ -41,6 +41,7 @@ create table if not exists "desbravador" (
   "codigo_desbravador" text not null unique,
   "nome_desbravador" text not null,
   "unidade" text not null,
+  "email_responsavel" text not null default 'sistema',
   "created_at" timestamp(3) not null default current_timestamp,
   "updated_at" timestamp(3) not null default current_timestamp
 );
@@ -49,6 +50,7 @@ create table if not exists "especialidades" (
   "id" text primary key,
   "codigo_especialidade" text not null unique,
   "nome_especialidade" text not null,
+  "email_responsavel" text not null default 'sistema',
   "created_at" timestamp(3) not null default current_timestamp,
   "updated_at" timestamp(3) not null default current_timestamp
 );
@@ -67,3 +69,9 @@ create index if not exists "especialidade_completa_codigo_desbravador_idx"
 
 create index if not exists "especialidade_completa_codigo_especialidade_idx"
   on "especialidade_completa"("codigo_especialidade");
+
+create table if not exists "administradores" (
+  "id" text primary key,
+  "email" text not null unique,
+  "created_at" timestamp(3) not null default current_timestamp
+);

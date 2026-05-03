@@ -13,6 +13,7 @@ Aplicacao web em Next.js com TypeScript para controlar especialidades concluidas
 - Listagem de especialidades concluidas com responsavel e data/hora.
 - Exclusao segura de vinculos.
 - Bloqueio de exclusao de desbravadores/especialidades que possuem registros concluidos.
+- Alteracao e exclusao restritas ao usuario que cadastrou ou a administradores.
 
 ## Variaveis de ambiente
 
@@ -24,10 +25,15 @@ AUTH_GOOGLE_ID="client-id-google"
 AUTH_GOOGLE_SECRET="client-secret-google"
 AUTH_URL="https://seu-dominio.vercel.app"
 AUTH_TRUST_HOST="true"
+ADMIN_EMAILS="admin@example.com,outro-admin@example.com"
 DATABASE_URL="postgresql://..."
 ```
 
 Na Vercel, coloque apenas o valor no campo **Value**, sem aspas e sem `NOME=`.
+
+`ADMIN_EMAILS` e uma lista separada por virgulas. Esses usuarios podem alterar e excluir qualquer registro. Quem nao esta nessa lista so pode alterar ou excluir registros que ele mesmo cadastrou.
+
+Use `ADMIN_EMAILS` para definir pelo menos o primeiro administrador. Depois do login, esse administrador pode cadastrar outros pela tela `/administradores`.
 
 ## Google OAuth
 
@@ -159,3 +165,4 @@ Especialidades concluidas:
 - `/registrar/desbravador`
 - `/registrar/especialidade`
 - `/completas`
+- `/administradores`

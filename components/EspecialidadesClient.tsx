@@ -6,6 +6,7 @@ type Especialidade = {
   id: string;
   codigo_especialidade: string;
   nome_especialidade: string;
+  email_responsavel?: string;
 };
 
 const vazio = {
@@ -132,6 +133,7 @@ export function EspecialidadesClient() {
               <div>
                 <strong>{item.nome_especialidade}</strong>
                 <span>{item.codigo_especialidade}</span>
+                {item.email_responsavel ? <span>Cadastro: {item.email_responsavel}</span> : null}
               </div>
               <div className="row-actions">
                 <button type="button" className="secondary small" onClick={() => setForm(item)}>

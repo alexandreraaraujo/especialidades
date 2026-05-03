@@ -57,6 +57,7 @@ model Desbravador {
   codigo_desbravador String     @unique
   nome_desbravador   String
   unidade            String
+  email_responsavel  String
   created_at         DateTime   @default(now())
   updated_at         DateTime   @updatedAt
   completas          Completa[]
@@ -68,6 +69,7 @@ model Especialidade {
   id                   String     @id @default(cuid())
   codigo_especialidade String     @unique
   nome_especialidade   String
+  email_responsavel    String
   created_at           DateTime   @default(now())
   updated_at           DateTime   @updatedAt
   completas            Completa[]
@@ -88,4 +90,12 @@ model Completa {
   @@index([codigo_desbravador])
   @@index([codigo_especialidade])
   @@map("especialidade_completa")
+}
+
+model Administrador {
+  id         String   @id @default(cuid())
+  email      String   @unique
+  created_at DateTime @default(now())
+
+  @@map("administradores")
 }

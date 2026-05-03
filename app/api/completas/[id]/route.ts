@@ -1,5 +1,11 @@
 import { prisma } from "@/lib/prisma";
-import { jsonError, jsonSuccess, requireUserEmail } from "@/lib/api";
+import {
+  canManage,
+  forbiddenOwnerMessage,
+  jsonError,
+  jsonSuccess,
+  requireUserEmail,
+} from "@/lib/api";
 
 export const runtime = "nodejs";
 
@@ -15,6 +21,10 @@ export async function DELETE(_request: Request, { params }: Params) {
   const completa = await prisma.completa.findUnique({ where: { id } });
 
   if (!completa) return jsonError("Registro nao encontrado.", 404);
+
+  if (!(await canManage(completa.email_responsavel, authResult.email))) {
+    return forbiddenOwnerMessage();
+  }
 
   await prisma.completa.delete({ where: { id } });
 

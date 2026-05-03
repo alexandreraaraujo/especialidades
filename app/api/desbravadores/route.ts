@@ -36,7 +36,12 @@ export async function POST(request: Request) {
 
   try {
     const desbravador = await prisma.desbravador.create({
-      data: { codigo_desbravador, nome_desbravador, unidade },
+      data: {
+        codigo_desbravador,
+        nome_desbravador,
+        unidade,
+        email_responsavel: authResult.email,
+      },
     });
 
     return jsonSuccess(

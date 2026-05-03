@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import { Prisma } from "@prisma/client";
 
 import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
 
 export async function requireUserEmail() {
   const session = await auth();
@@ -44,4 +45,34 @@ export function normalizeCode(value: unknown) {
 
 export function normalizeText(value: unknown) {
   return String(value ?? "").trim();
+}
+
+export function isEnvAdmin(email: string) {
+  const admins = (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((admin) => admin.trim().toLowerCase())
+    .filter(Boolean);
+
+  return admins.includes(email.toLowerCase());
+}
+
+export async function isAdmin(email: string) {
+  if (isEnvAdmin(email)) return true;
+
+  const admin = await prisma.administrador.findUnique({
+    where: { email: email.toLowerCase() },
+  });
+
+  return Boolean(admin);
+}
+
+export async function canManage(ownerEmail: string, userEmail: string) {
+  return ownerEmail.toLowerCase() === userEmail.toLowerCase() || isAdmin(userEmail);
+}
+
+export function forbiddenOwnerMessage() {
+  return jsonError(
+    "Apenas quem cadastrou este registro ou um administrador pode alterar ou excluir.",
+    403,
+  );
 }

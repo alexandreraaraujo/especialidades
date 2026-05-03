@@ -9,6 +9,7 @@ const links = [
   { href: "/registrar/desbravador", label: "Registrar por desbravador" },
   { href: "/registrar/especialidade", label: "Registrar por especialidade" },
   { href: "/completas", label: "Concluidas" },
+  { href: "/administradores", label: "Administradores" },
 ];
 
 export async function AppNav() {

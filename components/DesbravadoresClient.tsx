@@ -7,6 +7,7 @@ type Desbravador = {
   codigo_desbravador: string;
   nome_desbravador: string;
   unidade: string;
+  email_responsavel?: string;
 };
 
 const vazio = {
@@ -144,6 +145,7 @@ export function DesbravadoresClient() {
                 <span>
                   {item.codigo_desbravador} · {item.unidade}
                 </span>
+                {item.email_responsavel ? <span>Cadastro: {item.email_responsavel}</span> : null}
               </div>
               <div className="row-actions">
                 <button type="button" className="secondary small" onClick={() => setForm(item)}>

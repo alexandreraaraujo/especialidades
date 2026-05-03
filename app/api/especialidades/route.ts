@@ -35,7 +35,11 @@ export async function POST(request: Request) {
 
   try {
     const especialidade = await prisma.especialidade.create({
-      data: { codigo_especialidade, nome_especialidade },
+      data: {
+        codigo_especialidade,
+        nome_especialidade,
+        email_responsavel: authResult.email,
+      },
     });
 
     return jsonSuccess(

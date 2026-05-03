@@ -1,5 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import {
+  canManage,
+  forbiddenOwnerMessage,
   jsonError,
   jsonSuccess,
   normalizeCode,
@@ -31,6 +33,14 @@ export async function PUT(request: Request, { params }: Params) {
   if ("error" in authResult) return authResult.error;
 
   const { id } = await params;
+  const existente = await prisma.desbravador.findUnique({ where: { id } });
+
+  if (!existente) return jsonError("Desbravador nao encontrado.", 404);
+
+  if (!(await canManage(existente.email_responsavel, authResult.email))) {
+    return forbiddenOwnerMessage();
+  }
+
   const body = await request.json();
   const codigo_desbravador = normalizeCode(body.codigo_desbravador);
   const nome_desbravador = normalizeText(body.nome_desbravador);
@@ -63,6 +73,10 @@ export async function DELETE(_request: Request, { params }: Params) {
   const desbravador = await prisma.desbravador.findUnique({ where: { id } });
 
   if (!desbravador) return jsonError("Desbravador nao encontrado.", 404);
+
+  if (!(await canManage(desbravador.email_responsavel, authResult.email))) {
+    return forbiddenOwnerMessage();
+  }
 
   const total = await prisma.completa.count({
     where: { codigo_desbravador: desbravador.codigo_desbravador },
