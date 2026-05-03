@@ -1,6 +1,7 @@
 import Link from "next/link";
 
 import { auth, signOut } from "@/auth";
+import { isAdmin } from "@/lib/api";
 
 const links = [
   { href: "/dashboard", label: "Dashboard" },
@@ -9,11 +10,14 @@ const links = [
   { href: "/registrar/desbravador", label: "Registrar por desbravador" },
   { href: "/registrar/especialidade", label: "Registrar por especialidade" },
   { href: "/completas", label: "Concluidas" },
-  { href: "/administradores", label: "Administradores" },
 ];
 
 export async function AppNav() {
   const session = await auth();
+  const admin = session?.user?.email ? await isAdmin(session.user.email) : false;
+  const visibleLinks = admin
+    ? [...links, { href: "/administradores", label: "Administradores" }]
+    : links;
 
   return (
     <header className="app-header">
@@ -22,7 +26,7 @@ export async function AppNav() {
         <span>{session?.user?.email}</span>
       </div>
       <nav>
-        {links.map((link) => (
+        {visibleLinks.map((link) => (
           <Link key={link.href} href={link.href}>
             {link.label}
           </Link>

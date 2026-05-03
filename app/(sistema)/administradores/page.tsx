@@ -1,6 +1,17 @@
-import { AdministradoresClient } from "@/components/AdministradoresClient";
+import { redirect } from "next/navigation";
 
-export default function AdministradoresPage() {
+import { auth } from "@/auth";
+import { AdministradoresClient } from "@/components/AdministradoresClient";
+import { isAdmin } from "@/lib/api";
+
+export default async function AdministradoresPage() {
+  const session = await auth();
+  const email = session?.user?.email;
+
+  if (!email || !(await isAdmin(email))) {
+    redirect("/dashboard");
+  }
+
   return (
     <section className="stack">
       <div className="page-title">
