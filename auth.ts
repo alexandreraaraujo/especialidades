@@ -10,7 +10,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   providers: [Google],
   logger: {
     error(error) {
-      console.error("[auth][error]", error);
+      console.error("[auth][error]", {
+        name: error.name,
+        message: error.message,
+        stack: error.stack,
+        cause: "cause" in error ? error.cause : undefined,
+      });
     },
     warn(code) {
       console.warn("[auth][warn]", code);
