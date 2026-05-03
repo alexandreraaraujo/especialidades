@@ -1,45 +1,50 @@
-import type { NextRequest } from "next/server";
+import { NextResponse } from "next/server";
 
-import { handlers } from "@/auth";
+import { prisma } from "@/lib/prisma";
 
 export const runtime = "nodejs";
 
-function logRouteError(error: unknown) {
-  if (error instanceof Error) {
-    console.error(
-      "[auth-route][error]",
-      JSON.stringify(
+export async function GET() {
+  try {
+    const databaseUrl = process.env.DATABASE_URL;
+
+    if (!databaseUrl) {
+      return NextResponse.json(
         {
+          ok: false,
+          error: "DATABASE_URL is missing",
+        },
+        { status: 500 },
+      );
+    }
+
+    await prisma.$queryRaw`select 1`;
+    await prisma.user.findFirst();
+
+    return NextResponse.json({
+      ok: true,
+      databaseUrlConfigured: true,
+      userTableAccessible: true,
+    });
+  } catch (error) {
+    if (error instanceof Error) {
+      return NextResponse.json(
+        {
+          ok: false,
           name: error.name,
           message: error.message,
-          stack: error.stack,
           cause: "cause" in error ? error.cause : undefined,
         },
-        null,
-        2,
-      ),
+        { status: 500 },
+      );
+    }
+
+    return NextResponse.json(
+      {
+        ok: false,
+        error,
+      },
+      { status: 500 },
     );
-  } else {
-    console.error("[auth-route][error]", JSON.stringify(error, null, 2));
   }
 }
-
-export async function GET(request: NextRequest) {
-  try {
-    return await handlers.GET(request);
-  } catch (error) {
-    logRouteError(error);
-    throw error;
-  }
-}
-
-export async function POST(request: NextRequest) {
-  try {
-    return await handlers.POST(request);
-  } catch (error) {
-    logRouteError(error);
-    throw error;
-  }
-}
-
-
