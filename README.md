@@ -7,6 +7,7 @@ Aplicacao web em Next.js com TypeScript para controlar especialidades concluidas
 - Login com Google.
 - Dashboard com totais de desbravadores, especialidades e conclusoes.
 - CRUD de desbravadores somente para administradores.
+- Importacao de desbravadores por CSV somente para administradores.
 - Especialidades permanecem no banco/API para registro, sem tela de cadastro no menu.
 - Registro em massa por desbravador.
 - Registro em massa por especialidade.
@@ -137,9 +138,35 @@ Desbravadores:
 
 - `GET /api/desbravadores`
 - `POST /api/desbravadores`
+- `POST /api/desbravadores/importar`
 - `GET /api/desbravadores/:id`
 - `PUT /api/desbravadores/:id`
 - `DELETE /api/desbravadores/:id`
+
+## Importar desbravadores por CSV
+
+A tela `/desbravadores` possui upload de CSV para administradores. O arquivo deve conter as colunas:
+
+```csv
+id,Nome,Unidade
+D001,Ana Silva,Aguias
+D002,Bruno Souza,Leoes
+```
+
+Tambem sao aceitos arquivos separados por ponto e virgula:
+
+```csv
+id;Nome;Unidade
+D001;Ana Silva;Aguias
+```
+
+Mapeamento:
+
+- `id` vira `codigo_desbravador`
+- `Nome` vira `nome_desbravador`
+- `Unidade` vira `unidade`
+
+O sistema bloqueia a importacao se houver `id` repetido no arquivo ou se algum codigo ja existir no banco.
 
 Especialidades:
 

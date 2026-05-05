@@ -87,48 +87,82 @@ export function DesbravadoresClient() {
     carregar();
   }
 
+  async function importar(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    setMensagem("");
+    setErro("");
+
+    const formData = new FormData(event.currentTarget);
+    const response = await fetch("/api/desbravadores/importar", {
+      method: "POST",
+      body: formData,
+    });
+    const data = await response.json();
+
+    if (!response.ok) {
+      setErro(data.error ?? "Nao foi possivel importar o CSV.");
+      return;
+    }
+
+    setMensagem(`${data.message} Total: ${data.total}.`);
+    event.currentTarget.reset();
+    carregar();
+  }
+
   return (
     <section className="grid-two">
-      <form className="box stack" onSubmit={salvar}>
-        <h2>{form.id ? "Editar desbravador" : "Novo desbravador"}</h2>
-        <label>
-          Código
-          <input
-            value={form.codigo_desbravador}
-            onChange={(e) =>
-              setForm({ ...form, codigo_desbravador: e.target.value })
-            }
-            placeholder="D001"
-          />
-        </label>
-        <label>
-          Nome
-          <input
-            value={form.nome_desbravador}
-            onChange={(e) =>
-              setForm({ ...form, nome_desbravador: e.target.value })
-            }
-            placeholder="Nome do desbravador"
-          />
-        </label>
-        <label>
-          Unidade
-          <input
-            value={form.unidade}
-            onChange={(e) => setForm({ ...form, unidade: e.target.value })}
-            placeholder="Unidade"
-          />
-        </label>
-        <div className="actions">
-          <button type="submit">Salvar</button>
-          {form.id ? (
-            <button type="button" className="secondary" onClick={() => setForm(vazio)}>
-              Cancelar
-            </button>
-          ) : null}
-        </div>
-        <Feedback mensagem={mensagem} erro={erro} />
-      </form>
+      <div className="stack">
+        <form className="box stack" onSubmit={salvar}>
+          <h2>{form.id ? "Editar desbravador" : "Novo desbravador"}</h2>
+          <label>
+            Código
+            <input
+              value={form.codigo_desbravador}
+              onChange={(e) =>
+                setForm({ ...form, codigo_desbravador: e.target.value })
+              }
+              placeholder="D001"
+            />
+          </label>
+          <label>
+            Nome
+            <input
+              value={form.nome_desbravador}
+              onChange={(e) =>
+                setForm({ ...form, nome_desbravador: e.target.value })
+              }
+              placeholder="Nome do desbravador"
+            />
+          </label>
+          <label>
+            Unidade
+            <input
+              value={form.unidade}
+              onChange={(e) => setForm({ ...form, unidade: e.target.value })}
+              placeholder="Unidade"
+            />
+          </label>
+          <div className="actions">
+            <button type="submit">Salvar</button>
+            {form.id ? (
+              <button type="button" className="secondary" onClick={() => setForm(vazio)}>
+                Cancelar
+              </button>
+            ) : null}
+          </div>
+          <Feedback mensagem={mensagem} erro={erro} />
+        </form>
+
+        <form className="box stack" onSubmit={importar}>
+          <h2>Importar CSV</h2>
+          <p className="hint">Colunas esperadas: id, Nome, Unidade.</p>
+          <label>
+            Arquivo CSV
+            <input name="arquivo" type="file" accept=".csv,text/csv" />
+          </label>
+          <button type="submit">Importar desbravadores</button>
+        </form>
+      </div>
 
       <div className="box stack">
         <h2>Desbravadores</h2>

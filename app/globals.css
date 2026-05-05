@@ -189,6 +189,11 @@ label {
   margin: 7px 0 0;
 }
 
+.hint {
+  color: var(--muted);
+  margin: 0;
+}
+
 .stats-grid,
 .grid-two {
   display: grid;
