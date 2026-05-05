@@ -155,7 +155,7 @@ export function DesbravadoresClient() {
 
         <form className="box stack" onSubmit={importar}>
           <h2>Importar CSV</h2>
-          <p className="hint">Colunas esperadas: id, Nome, Unidade.</p>
+          <p className="hint">Colunas esperadas: id, nome_desbravador, unidade.</p>
           <label>
             Arquivo CSV
             <input name="arquivo" type="file" accept=".csv,text/csv" />

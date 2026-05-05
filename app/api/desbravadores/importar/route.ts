@@ -25,12 +25,16 @@ export async function POST(request: Request) {
     return jsonError("O CSV esta vazio ou nao possui linhas de dados.");
   }
 
-  const desbravadores = rows.map((row, index) => ({
-    linha: index + 2,
-    codigo_desbravador: normalizeCode(row.id),
-    nome_desbravador: normalizeText(row.Nome),
-    unidade: normalizeText(row.Unidade),
-  }));
+  const desbravadores = rows.map((row, index) => {
+    const codigo = normalizeCode(row.id ?? row.codigo_desbravador);
+    return {
+      linha: index + 2,
+      id: codigo,
+      codigo_desbravador: codigo,
+      nome_desbravador: normalizeText(row.Nome ?? row.nome_desbravador),
+      unidade: normalizeText(row.Unidade ?? row.unidade),
+    };
+  });
 
   const incompletos = desbravadores.filter(
     (item) => !item.codigo_desbravador || !item.nome_desbravador || !item.unidade,
@@ -38,7 +42,7 @@ export async function POST(request: Request) {
 
   if (incompletos.length > 0) {
     return jsonError(
-      `Existem linhas sem id, Nome ou Unidade: ${incompletos
+      `Existem linhas sem id, nome_desbravador ou unidade: ${incompletos
         .map((item) => item.linha)
         .join(", ")}.`,
     );
@@ -59,14 +63,14 @@ export async function POST(request: Request) {
   }
 
   const existentes = await prisma.desbravador.findMany({
-    where: { codigo_desbravador: { in: codigos } },
-    select: { codigo_desbravador: true },
+    where: { id: { in: codigos } },
+    select: { id: true },
   });
 
   if (existentes.length > 0) {
     return jsonError(
       `Ja existem desbravadores com estes codigos: ${existentes
-        .map((item) => item.codigo_desbravador)
+        .map((item) => item.id)
         .join(", ")}.`,
       409,
     );
@@ -74,7 +78,7 @@ export async function POST(request: Request) {
 
   const resultado = await prisma.desbravador.createMany({
     data: desbravadores.map((item) => ({
-      codigo_desbravador: item.codigo_desbravador,
+      id: item.id,
       nome_desbravador: item.nome_desbravador,
       unidade: item.unidade,
       email_responsavel: authResult.email,

@@ -11,6 +11,20 @@ import {
 
 export const runtime = "nodejs";
 
+function desbravadorDto(desbravador: {
+  id: string;
+  nome_desbravador: string;
+  unidade: string;
+  email_responsavel: string;
+  created_at: Date;
+  updated_at: Date;
+}) {
+  return {
+    ...desbravador,
+    codigo_desbravador: desbravador.id,
+  };
+}
+
 type Params = {
   params: Promise<{ id: string }>;
 };
@@ -24,7 +38,7 @@ export async function GET(_request: Request, { params }: Params) {
 
   if (!desbravador) return jsonError("Desbravador nao encontrado.", 404);
 
-  return jsonSuccess(desbravador);
+  return jsonSuccess(desbravadorDto(desbravador));
 }
 
 export async function PUT(request: Request, { params }: Params) {
@@ -52,12 +66,12 @@ export async function PUT(request: Request, { params }: Params) {
   try {
     const desbravador = await prisma.desbravador.update({
       where: { id },
-      data: { codigo_desbravador, nome_desbravador, unidade },
+      data: { id: codigo_desbravador, nome_desbravador, unidade },
     });
 
     return jsonSuccess({
       message: "Desbravador atualizado com sucesso.",
-      desbravador,
+      desbravador: desbravadorDto(desbravador),
     });
   } catch (error) {
     return prismaError(error, "Ja existe um desbravador com este codigo.");
@@ -78,7 +92,7 @@ export async function DELETE(_request: Request, { params }: Params) {
   }
 
   const total = await prisma.completa.count({
-    where: { codigo_desbravador: desbravador.codigo_desbravador },
+    where: { codigo_desbravador: desbravador.id },
   });
 
   if (total > 0) {

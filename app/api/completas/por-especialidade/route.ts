@@ -32,7 +32,7 @@ export async function POST(request: Request) {
   if (!especialidade) return jsonError("Especialidade nao encontrada.", 404);
 
   const desbravadores = await prisma.desbravador.findMany({
-    where: { codigo_desbravador: { in: codigos_desbravadores } },
+    where: { id: { in: codigos_desbravadores } },
   });
 
   if (desbravadores.length !== codigos_desbravadores.length) {

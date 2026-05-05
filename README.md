@@ -148,7 +148,7 @@ Desbravadores:
 A tela `/desbravadores` possui upload de CSV para administradores. O arquivo deve conter as colunas:
 
 ```csv
-id,Nome,Unidade
+id,nome_desbravador,unidade
 D001,Ana Silva,Aguias
 D002,Bruno Souza,Leoes
 ```
@@ -156,16 +156,17 @@ D002,Bruno Souza,Leoes
 Tambem sao aceitos arquivos separados por ponto e virgula:
 
 ```csv
-id;Nome;Unidade
+id;nome_desbravador;unidade
 D001;Ana Silva;Aguias
 ```
 
 Mapeamento:
 
-- `id` vira `codigo_desbravador`
-- `Nome` vira `nome_desbravador`
-- `Unidade` vira `unidade`
+- `id` e o codigo do desbravador
+- `nome_desbravador` vira `nome_desbravador`
+- `unidade` vira `unidade`
 
+Tambem sao aceitos os nomes antigos de coluna `codigo_desbravador`, `Nome` e `Unidade`.
 O sistema bloqueia a importacao se houver `id` repetido no arquivo ou se algum codigo ja existir no banco.
 
 Especialidades:

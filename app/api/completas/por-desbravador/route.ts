@@ -26,7 +26,7 @@ export async function POST(request: Request) {
   }
 
   const desbravador = await prisma.desbravador.findUnique({
-    where: { codigo_desbravador },
+    where: { id: codigo_desbravador },
   });
 
   if (!desbravador) return jsonError("Desbravador nao encontrado.", 404);

@@ -11,6 +11,20 @@ import {
 
 export const runtime = "nodejs";
 
+function desbravadorDto(desbravador: {
+  id: string;
+  nome_desbravador: string;
+  unidade: string;
+  email_responsavel: string;
+  created_at: Date;
+  updated_at: Date;
+}) {
+  return {
+    ...desbravador,
+    codigo_desbravador: desbravador.id,
+  };
+}
+
 export async function GET() {
   const authResult = await requireUserEmail();
   if ("error" in authResult) return authResult.error;
@@ -19,7 +33,7 @@ export async function GET() {
     orderBy: [{ nome_desbravador: "asc" }],
   });
 
-  return jsonSuccess(desbravadores);
+  return jsonSuccess(desbravadores.map(desbravadorDto));
 }
 
 export async function POST(request: Request) {
@@ -42,7 +56,7 @@ export async function POST(request: Request) {
   try {
     const desbravador = await prisma.desbravador.create({
       data: {
-        codigo_desbravador,
+        id: codigo_desbravador,
         nome_desbravador,
         unidade,
         email_responsavel: authResult.email,
@@ -50,7 +64,10 @@ export async function POST(request: Request) {
     });
 
     return jsonSuccess(
-      { message: "Desbravador cadastrado com sucesso.", desbravador },
+      {
+        message: "Desbravador cadastrado com sucesso.",
+        desbravador: desbravadorDto(desbravador),
+      },
       201,
     );
   } catch (error) {

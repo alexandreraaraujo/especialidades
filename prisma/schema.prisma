@@ -53,8 +53,7 @@ model VerificationToken {
 }
 
 model Desbravador {
-  id                 String     @id @default(cuid())
-  codigo_desbravador String     @unique
+  id                 String     @id
   nome_desbravador   String
   unidade            String
   email_responsavel  String
@@ -83,7 +82,7 @@ model Completa {
   codigo_especialidade String
   email_responsavel    String
   created_at           DateTime      @default(now())
-  desbravador          Desbravador   @relation(fields: [codigo_desbravador], references: [codigo_desbravador], onDelete: Restrict)
+  desbravador          Desbravador   @relation(fields: [codigo_desbravador], references: [id], onDelete: Restrict)
   especialidade        Especialidade @relation(fields: [codigo_especialidade], references: [codigo_especialidade], onDelete: Restrict)
 
   @@unique([codigo_desbravador, codigo_especialidade])

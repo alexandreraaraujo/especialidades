@@ -38,7 +38,6 @@ create table if not exists "VerificationToken" (
 
 create table if not exists "desbravador" (
   "id" text primary key,
-  "codigo_desbravador" text not null unique,
   "nome_desbravador" text not null,
   "unidade" text not null,
   "email_responsavel" text not null default 'sistema',
@@ -57,7 +56,7 @@ create table if not exists "especialidades" (
 
 create table if not exists "especialidade_completa" (
   "id" text primary key,
-  "codigo_desbravador" text not null references "desbravador"("codigo_desbravador") on delete restrict on update cascade,
+  "codigo_desbravador" text not null references "desbravador"("id") on delete restrict on update cascade,
   "codigo_especialidade" text not null references "especialidades"("codigo_especialidade") on delete restrict on update cascade,
   "email_responsavel" text not null,
   "created_at" timestamp(3) not null default current_timestamp,

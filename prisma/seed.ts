@@ -5,9 +5,9 @@ const prisma = new PrismaClient();
 async function main() {
   await prisma.desbravador.createMany({
     data: [
-      { codigo_desbravador: "D001", nome_desbravador: "Ana Silva", unidade: "Aguias", email_responsavel: "sistema" },
-      { codigo_desbravador: "D002", nome_desbravador: "Bruno Souza", unidade: "Leoes", email_responsavel: "sistema" },
-      { codigo_desbravador: "D003", nome_desbravador: "Carla Santos", unidade: "Falcao", email_responsavel: "sistema" },
+      { id: "D001", nome_desbravador: "Ana Silva", unidade: "Aguias", email_responsavel: "sistema" },
+      { id: "D002", nome_desbravador: "Bruno Souza", unidade: "Leoes", email_responsavel: "sistema" },
+      { id: "D003", nome_desbravador: "Carla Santos", unidade: "Falcao", email_responsavel: "sistema" },
     ],
     skipDuplicates: true,
   });
