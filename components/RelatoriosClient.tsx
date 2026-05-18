@@ -35,7 +35,10 @@ type Props = {
   completas: Completa[];
 };
 
+type TipoRelatorio = "compra" | "especialidade" | "desbravador";
+
 export function RelatoriosClient({ desbravadores, especialidades, completas }: Props) {
+  const [tipoRelatorio, setTipoRelatorio] = useState<TipoRelatorio>("compra");
   const [especialidadesSelecionadas, setEspecialidadesSelecionadas] = useState<string[]>([]);
   const [desbravadoresSelecionados, setDesbravadoresSelecionados] = useState<string[]>([]);
   const [buscaEspecialidade, setBuscaEspecialidade] = useState("");
@@ -63,9 +66,9 @@ export function RelatoriosClient({ desbravadores, especialidades, completas }: P
       if (atual) atual.quantidade += 1;
     });
 
-    return Array.from(totais.values()).sort((a, b) =>
-      a.nome.localeCompare(b.nome, "pt-BR"),
-    );
+    return Array.from(totais.values())
+      .filter((item) => item.quantidade > 0)
+      .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
   }, [completas, especialidades]);
 
   const especialidadesFiltradas = useMemo(() => {
@@ -141,6 +144,34 @@ export function RelatoriosClient({ desbravadores, especialidades, completas }: P
   return (
     <div className="stack">
       <section className="box stack">
+        <h2>Escolha o relatorio</h2>
+        <div className="tabs">
+          <button
+            type="button"
+            className={tipoRelatorio === "compra" ? "small" : "secondary small"}
+            onClick={() => setTipoRelatorio("compra")}
+          >
+            Compra de especialidades
+          </button>
+          <button
+            type="button"
+            className={tipoRelatorio === "especialidade" ? "small" : "secondary small"}
+            onClick={() => setTipoRelatorio("especialidade")}
+          >
+            Por especialidade
+          </button>
+          <button
+            type="button"
+            className={tipoRelatorio === "desbravador" ? "small" : "secondary small"}
+            onClick={() => setTipoRelatorio("desbravador")}
+          >
+            Por desbravador
+          </button>
+        </div>
+      </section>
+
+      {tipoRelatorio === "compra" ? (
+        <section className="box stack">
         <div className="selection-header">
           <h2>Compra de especialidades</h2>
           <span>{resumoCompra.length} especialidade(s)</span>
@@ -166,8 +197,10 @@ export function RelatoriosClient({ desbravadores, especialidades, completas }: P
           </table>
         </div>
       </section>
+      ) : null}
 
-      <section className="grid-two">
+      {tipoRelatorio === "especialidade" ? (
+        <section className="grid-two">
         <div className="box stack">
           <div className="selection-header">
             <h2>Por especialidade</h2>
@@ -252,8 +285,10 @@ export function RelatoriosClient({ desbravadores, especialidades, completas }: P
           </div>
         </div>
       </section>
+      ) : null}
 
-      <section className="grid-two">
+      {tipoRelatorio === "desbravador" ? (
+        <section className="grid-two">
         <div className="box stack">
           <div className="selection-header">
             <h2>Por desbravador</h2>
@@ -357,6 +392,7 @@ export function RelatoriosClient({ desbravadores, especialidades, completas }: P
           </div>
         </div>
       </section>
+      ) : null}
     </div>
   );
 }

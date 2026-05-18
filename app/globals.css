@@ -228,7 +228,8 @@ label {
 
 .actions,
 .row-actions,
-.selection-header {
+.selection-header,
+.tabs {
   align-items: center;
   display: flex;
   flex-wrap: wrap;
