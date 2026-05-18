@@ -384,6 +384,9 @@ th {
 @media print {
   body {
     background: #ffffff;
+    font-size: 14px;
+    line-height: 1.5;
+    overflow: visible;
   }
 
   .app-header,
@@ -408,8 +411,30 @@ th {
     display: block;
   }
 
+  .table-wrap {
+    overflow: visible;
+  }
+
+  table {
+    font-size: 14px;
+    line-height: 1.5;
+    min-width: 0;
+  }
+
+  th,
+  td {
+    padding: 6px 8px;
+  }
+
   .report-group {
     break-inside: avoid;
     margin-bottom: 18px;
+  }
+
+  .report-group h3,
+  .report-group li,
+  .report-group-title span {
+    font-size: 14px;
+    line-height: 1.5;
   }
 }
