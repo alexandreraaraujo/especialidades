@@ -17,6 +17,7 @@ export async function AppNav() {
     ? [
         { href: "/desbravadores", label: "Desbravadores" },
         ...links,
+        { href: "/relatorios", label: "Relatorios" },
         { href: "/administradores", label: "Administradores" },
       ]
     : links;
