@@ -108,6 +108,40 @@ export function RelatoriosClient({ desbravadores, especialidades, completas }: P
       );
   }, [completas, especialidades, especialidadesSelecionadas]);
 
+  const relatorioPorEspecialidadeAgrupado = useMemo(() => {
+    const grupos = new Map<
+      string,
+      {
+        codigo: string;
+        nome: string;
+        desbravadores: {
+          codigo: string;
+          nome: string;
+          unidade: string;
+          created_at: string;
+        }[];
+      }
+    >();
+
+    relatorioPorEspecialidade.forEach((item) => {
+      const grupo = grupos.get(item.codigo_especialidade) ?? {
+        codigo: item.codigo_especialidade,
+        nome: item.especialidade.nome_especialidade,
+        desbravadores: [],
+      };
+
+      grupo.desbravadores.push({
+        codigo: item.codigo_desbravador,
+        nome: item.desbravador.nome_desbravador,
+        unidade: item.desbravador.unidade,
+        created_at: item.created_at,
+      });
+      grupos.set(item.codigo_especialidade, grupo);
+    });
+
+    return Array.from(grupos.values());
+  }, [relatorioPorEspecialidade]);
+
   const relatorioPorDesbravador = useMemo(() => {
     const codigos =
       desbravadoresSelecionados.length > 0
@@ -124,6 +158,40 @@ export function RelatoriosClient({ desbravadores, especialidades, completas }: P
         ),
       );
   }, [completas, desbravadoresFiltrados, desbravadoresSelecionados, unidade]);
+
+  const relatorioPorDesbravadorAgrupado = useMemo(() => {
+    const grupos = new Map<
+      string,
+      {
+        codigo: string;
+        nome: string;
+        unidade: string;
+        especialidades: {
+          codigo: string;
+          nome: string;
+          created_at: string;
+        }[];
+      }
+    >();
+
+    relatorioPorDesbravador.forEach((item) => {
+      const grupo = grupos.get(item.codigo_desbravador) ?? {
+        codigo: item.codigo_desbravador,
+        nome: item.desbravador.nome_desbravador,
+        unidade: item.desbravador.unidade,
+        especialidades: [],
+      };
+
+      grupo.especialidades.push({
+        codigo: item.codigo_especialidade,
+        nome: item.especialidade.nome_especialidade,
+        created_at: item.created_at,
+      });
+      grupos.set(item.codigo_desbravador, grupo);
+    });
+
+    return Array.from(grupos.values());
+  }, [relatorioPorDesbravador]);
 
   function alternarEspecialidade(codigo: string) {
     setEspecialidadesSelecionadas((atuais) =>
@@ -174,14 +242,18 @@ export function RelatoriosClient({ desbravadores, especialidades, completas }: P
         <section className="box stack">
         <div className="selection-header">
           <h2>Compra de especialidades</h2>
-          <span>{resumoCompra.length} especialidade(s)</span>
+          <div className="actions">
+            <span>{resumoCompra.length} especialidade(s)</span>
+            <button type="button" className="secondary small no-print" onClick={() => window.print()}>
+              Imprimir
+            </button>
+          </div>
         </div>
         <div className="table-wrap">
           <table>
             <thead>
               <tr>
                 <th>Especialidade</th>
-                <th>Codigo</th>
                 <th>Quantidade concluida</th>
               </tr>
             </thead>
@@ -189,7 +261,6 @@ export function RelatoriosClient({ desbravadores, especialidades, completas }: P
               {resumoCompra.map((item) => (
                 <tr key={item.codigo}>
                   <td>{item.nome}</td>
-                  <td>{item.codigo}</td>
                   <td>{item.quantidade}</td>
                 </tr>
               ))}
@@ -251,37 +322,30 @@ export function RelatoriosClient({ desbravadores, especialidades, completas }: P
         <div className="box stack">
           <div className="selection-header">
             <h2>Resultado</h2>
-            <span>{relatorioPorEspecialidade.length} registro(s)</span>
+            <div className="actions">
+              <span>{relatorioPorEspecialidade.length} registro(s)</span>
+              <button type="button" className="secondary small no-print" onClick={() => window.print()}>
+                Imprimir
+              </button>
+            </div>
           </div>
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Especialidade</th>
-                  <th>Desbravador</th>
-                  <th>Unidade</th>
-                  <th>Cadastro</th>
-                </tr>
-              </thead>
-              <tbody>
-                {relatorioPorEspecialidade.map((item) => (
-                  <tr key={item.id}>
-                    <td>
-                      {item.especialidade.nome_especialidade}
-                      <br />
-                      <small>{item.codigo_especialidade}</small>
-                    </td>
-                    <td>
-                      {item.desbravador.nome_desbravador}
-                      <br />
-                      <small>{item.codigo_desbravador}</small>
-                    </td>
-                    <td>{item.desbravador.unidade}</td>
-                    <td>{new Date(item.created_at).toLocaleString("pt-BR")}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="report-groups">
+            {relatorioPorEspecialidadeAgrupado.map((grupo) => (
+              <article key={grupo.codigo} className="report-group">
+                <div className="report-group-title">
+                  <h3>{grupo.nome}</h3>
+                  <span>{grupo.desbravadores.length} desbravador(es)</span>
+                </div>
+                <ul>
+                  {grupo.desbravadores.map((item) => (
+                    <li key={`${grupo.codigo}-${item.codigo}`}>
+                      <strong>{item.nome}</strong>
+                      <span>{item.unidade}</span>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))}
           </div>
         </div>
       </section>
@@ -358,37 +422,31 @@ export function RelatoriosClient({ desbravadores, especialidades, completas }: P
         <div className="box stack">
           <div className="selection-header">
             <h2>Resultado</h2>
-            <span>{relatorioPorDesbravador.length} registro(s)</span>
+            <div className="actions">
+              <span>{relatorioPorDesbravador.length} registro(s)</span>
+              <button type="button" className="secondary small no-print" onClick={() => window.print()}>
+                Imprimir
+              </button>
+            </div>
           </div>
-          <div className="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Desbravador</th>
-                  <th>Unidade</th>
-                  <th>Especialidade</th>
-                  <th>Cadastro</th>
-                </tr>
-              </thead>
-              <tbody>
-                {relatorioPorDesbravador.map((item) => (
-                  <tr key={item.id}>
-                    <td>
-                      {item.desbravador.nome_desbravador}
-                      <br />
-                      <small>{item.codigo_desbravador}</small>
-                    </td>
-                    <td>{item.desbravador.unidade}</td>
-                    <td>
-                      {item.especialidade.nome_especialidade}
-                      <br />
-                      <small>{item.codigo_especialidade}</small>
-                    </td>
-                    <td>{new Date(item.created_at).toLocaleString("pt-BR")}</td>
-                  </tr>
-                ))}
-              </tbody>
-            </table>
+          <div className="report-groups">
+            {relatorioPorDesbravadorAgrupado.map((grupo) => (
+              <article key={grupo.codigo} className="report-group">
+                <div className="report-group-title">
+                  <h3>{grupo.nome}</h3>
+                  <span>
+                    {grupo.unidade} · {grupo.especialidades.length} especialidade(s)
+                  </span>
+                </div>
+                <ul>
+                  {grupo.especialidades.map((item) => (
+                    <li key={`${grupo.codigo}-${item.codigo}`}>
+                      <strong>{item.nome}</strong>
+                    </li>
+                  ))}
+                </ul>
+              </article>
+            ))}
           </div>
         </div>
       </section>
