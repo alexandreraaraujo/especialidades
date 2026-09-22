@@ -53,6 +53,28 @@ export function RelatoriosClient({ desbravadores, especialidades, completas }: P
     [desbravadores],
   );
 
+  const pendentes = useMemo(
+    () => completas.filter((item) => item.lote_compra === null),
+    [completas],
+  );
+
+  const resumoCompraDesbravadores = useMemo(() => {
+    const grupos = new Map<string, { codigo: string; nome: string; unidade: string; especialidades: string[] }>();
+    pendentes.forEach((item) => {
+      const grupo = grupos.get(item.codigo_desbravador) ?? {
+        codigo: item.codigo_desbravador,
+        nome: item.desbravador.nome_desbravador,
+        unidade: item.desbravador.unidade,
+        especialidades: [],
+      };
+      grupo.especialidades.push(item.especialidade.nome_especialidade);
+      grupos.set(item.codigo_desbravador, grupo);
+    });
+    const resultado = Array.from(grupos.values()).sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
+    resultado.forEach((grupo) => grupo.especialidades.sort((a, b) => a.localeCompare(b, "pt-BR")));
+    return resultado;
+  }, [pendentes]);
+
   const resumoCompra = useMemo(() => {
     const totais = new Map<string, { codigo: string; nome: string; quantidade: number }>();
 
@@ -64,7 +86,7 @@ export function RelatoriosClient({ desbravadores, especialidades, completas }: P
       });
     });
 
-    completas.forEach((completa) => {
+    pendentes.forEach((completa) => {
       const atual = totais.get(completa.codigo_especialidade);
       if (atual) atual.quantidade += 1;
     });
@@ -72,7 +94,7 @@ export function RelatoriosClient({ desbravadores, especialidades, completas }: P
     return Array.from(totais.values())
       .filter((item) => item.quantidade > 0)
       .sort((a, b) => a.nome.localeCompare(b.nome, "pt-BR"));
-  }, [completas, especialidades]);
+  }, [pendentes, especialidades]);
 
   const especialidadesFiltradas = useMemo(() => {
     const termo = buscaEspecialidade.toLowerCase();
@@ -246,20 +268,22 @@ export function RelatoriosClient({ desbravadores, especialidades, completas }: P
       {tipoRelatorio === "compra" ? (
         <section className="box stack">
         <div className="selection-header">
-          <h2>Compra de especialidades</h2>
+          <h2>Especialidades pendentes para compra</h2>
           <div className="actions">
-            <span>{resumoCompra.length} especialidade(s)</span>
+            <span>{pendentes.length} pendência(s)</span>
             <button type="button" className="secondary small no-print" onClick={() => window.print()}>
               Imprimir
             </button>
           </div>
         </div>
+        <h3>Resumo por especialidade</h3>
+        {pendentes.length === 0 ? <p>Nenhuma especialidade pendente para compra.</p> : null}
         <div className="table-wrap">
           <table>
             <thead>
               <tr>
                 <th>Especialidade</th>
-                <th>Quantidade concluida</th>
+                <th>Quantidade pendente</th>
               </tr>
             </thead>
             <tbody>
@@ -271,6 +295,22 @@ export function RelatoriosClient({ desbravadores, especialidades, completas }: P
               ))}
             </tbody>
           </table>
+        </div>
+        <h3>Resumo por desbravador</h3>
+        <div className="report-groups">
+          {resumoCompraDesbravadores.map((grupo) => (
+            <article key={grupo.codigo} className="report-group">
+              <div className="report-group-title">
+                <h3>{grupo.nome}</h3>
+                <span>{grupo.unidade} · {grupo.especialidades.length} especialidade(s)</span>
+              </div>
+              <ul>
+                {grupo.especialidades.map((nome, indice) => (
+                  <li key={indice}><strong>{nome}</strong></li>
+                ))}
+              </ul>
+            </article>
+          ))}
         </div>
       </section>
       ) : null}
