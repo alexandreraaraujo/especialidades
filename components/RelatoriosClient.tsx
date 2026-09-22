@@ -27,6 +27,9 @@ type Completa = {
   especialidade: {
     nome_especialidade: string;
   };
+  lote_compra: {
+    nome: string;
+  } | null;
 };
 
 type Props = {
@@ -169,6 +172,7 @@ export function RelatoriosClient({ desbravadores, especialidades, completas }: P
         especialidades: {
           codigo: string;
           nome: string;
+          compra: string;
           created_at: string;
         }[];
       }
@@ -185,6 +189,7 @@ export function RelatoriosClient({ desbravadores, especialidades, completas }: P
       grupo.especialidades.push({
         codigo: item.codigo_especialidade,
         nome: item.especialidade.nome_especialidade,
+        compra: item.lote_compra?.nome ?? "Pendente",
         created_at: item.created_at,
       });
       grupos.set(item.codigo_desbravador, grupo);
@@ -442,6 +447,7 @@ export function RelatoriosClient({ desbravadores, especialidades, completas }: P
                   {grupo.especialidades.map((item) => (
                     <li key={`${grupo.codigo}-${item.codigo}`}>
                       <strong>{item.nome}</strong>
+                      <span>{item.compra}</span>
                     </li>
                   ))}
                 </ul>

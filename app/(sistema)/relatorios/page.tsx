@@ -24,6 +24,7 @@ export default async function RelatoriosPage() {
       include: {
         desbravador: true,
         especialidade: true,
+        lote_compra: true,
       },
       orderBy: [{ codigo_especialidade: "asc" }, { codigo_desbravador: "asc" }],
     }),
@@ -59,6 +60,11 @@ export default async function RelatoriosPage() {
           especialidade: {
             nome_especialidade: item.especialidade.nome_especialidade,
           },
+          lote_compra: item.lote_compra
+            ? {
+                nome: item.lote_compra.nome,
+              }
+            : null,
         }))}
       />
     </section>

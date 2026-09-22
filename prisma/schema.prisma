@@ -82,12 +82,15 @@ model Completa {
   codigo_especialidade String
   email_responsavel    String
   created_at           DateTime      @default(now())
+  lote_compra_id       String?
   desbravador          Desbravador   @relation(fields: [codigo_desbravador], references: [id], onDelete: Restrict)
   especialidade        Especialidade @relation(fields: [codigo_especialidade], references: [codigo_especialidade], onDelete: Restrict)
+  lote_compra          LoteCompra?   @relation(fields: [lote_compra_id], references: [id], onDelete: SetNull)
 
   @@unique([codigo_desbravador, codigo_especialidade])
   @@index([codigo_desbravador])
   @@index([codigo_especialidade])
+  @@index([lote_compra_id])
   @@map("especialidade_completa")
 }
 
@@ -97,4 +100,15 @@ model Administrador {
   created_at DateTime @default(now())
 
   @@map("administradores")
+}
+
+model LoteCompra {
+  id          String     @id @default(cuid())
+  nome        String
+  data_compra DateTime?
+  criado_em   DateTime   @default(now())
+  criado_por  String
+  registros   Completa[]
+
+  @@map("lotes_compra")
 }

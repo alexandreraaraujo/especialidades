@@ -43,15 +43,29 @@ button {
   padding: 0 18px;
 }
 
+.button-link {
+  align-items: center;
+  background: var(--primary);
+  border-radius: 6px;
+  color: #ffffff;
+  display: inline-flex;
+  font-weight: 700;
+  min-height: 44px;
+  padding: 0 18px;
+  text-decoration: none;
+}
+
 button:hover {
   background: var(--primary-hover);
 }
 
-button.secondary {
+button.secondary,
+.button-link.secondary {
   background: #2f3640;
 }
 
-button.secondary:hover {
+button.secondary:hover,
+.button-link.secondary:hover {
   background: #1f242b;
 }
 

@@ -7,7 +7,8 @@ const links = [
   { href: "/dashboard", label: "Dashboard" },
   { href: "/registrar/desbravador", label: "Registrar por desbravador" },
   { href: "/registrar/especialidade", label: "Registrar por especialidade" },
-  { href: "/completas", label: "Concluidas" },
+  { href: "/completas", label: "Pendentes" },
+  { href: "/historico-compras", label: "Histórico de compras" },
 ];
 
 export async function AppNav() {
