@@ -44,6 +44,30 @@ export default async function LoteCompraDetalhePage({ params }: Params) {
     a.nome.localeCompare(b.nome, "pt-BR"),
   );
 
+  const resumoDesbravadores = new Map<
+    string,
+    { id: string; nome: string; unidade: string; especialidades: string[] }
+  >();
+
+  lote.registros.forEach((registro) => {
+    const atual = resumoDesbravadores.get(registro.codigo_desbravador) ?? {
+      id: registro.codigo_desbravador,
+      nome: registro.desbravador.nome_desbravador,
+      unidade: registro.desbravador.unidade,
+      especialidades: [],
+    };
+
+    atual.especialidades.push(registro.especialidade.nome_especialidade);
+    resumoDesbravadores.set(registro.codigo_desbravador, atual);
+  });
+
+  const desbravadoresOrdenados = Array.from(resumoDesbravadores.values()).sort(
+    (a, b) => a.nome.localeCompare(b.nome, "pt-BR"),
+  );
+  desbravadoresOrdenados.forEach((item) => {
+    item.especialidades.sort((a, b) => a.localeCompare(b, "pt-BR"));
+  });
+
   return (
     <section className="stack">
       <div className="page-title">
@@ -95,6 +119,35 @@ export default async function LoteCompraDetalhePage({ params }: Params) {
                   <td>{item.nome}</td>
                   <td>{item.codigo}</td>
                   <td>{item.quantidade}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section className="box stack">
+        <div className="selection-header">
+          <h2>Resumo por desbravador</h2>
+          <span>{desbravadoresOrdenados.length} desbravador(es)</span>
+        </div>
+        <div className="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Desbravador</th>
+                <th>Unidade</th>
+                <th>Especialidades</th>
+                <th>Quantidade</th>
+              </tr>
+            </thead>
+            <tbody>
+              {desbravadoresOrdenados.map((item) => (
+                <tr key={item.id}>
+                  <td>{item.nome}</td>
+                  <td>{item.unidade}</td>
+                  <td>{item.especialidades.join(", ")}</td>
+                  <td>{item.especialidades.length}</td>
                 </tr>
               ))}
             </tbody>
