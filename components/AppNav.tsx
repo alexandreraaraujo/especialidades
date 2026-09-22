@@ -21,7 +21,7 @@ export async function AppNav() {
         { href: "/relatorios", label: "Relatorios" },
         { href: "/administradores", label: "Administradores" },
       ]
-    : links;
+    : links.filter((link) => link.href !== "/completas");
 
   return (
     <header className="app-header">
